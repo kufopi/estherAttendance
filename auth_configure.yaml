@@ -12,6 +12,6 @@ cookie:
   expiry_days: 30
   key: achor
   name: some_cookie_name
-preauthorized:
-  emails:
-    - kufopo@yahoo.com
+# preauthorized:
+#   emails:
+#     - kufopo@yahoo.com
