@@ -21,7 +21,12 @@ authenticator = stauth.Authenticate(
 
 # Define the login function
 def login():
-    name, authentication_status, username = authenticator.login('main')
+    result = authenticator.login('main')
+    if result is None:
+        st.error("Login failed: No result returned from authenticator.")
+        return False, None
+    
+    name, authentication_status, username = result
     if 'authentication_status' not in st.session_state:
         st.session_state['authentication_status'] = authentication_status
     if authentication_status:
