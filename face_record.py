@@ -58,8 +58,10 @@ print(retrieve_data())
 
 
 #Configur face analysis
-faceapp = FaceAnalysis(name='buffalo_l', root='buffalo_l',providers=['CPUExecutionProvider'])
-faceapp.prepare(ctx_id=0,det_size=(640,640), det_thresh=0.5)
+faceapp = FaceAnalysis(name='buffalo_s', 
+                      root='buffalo_s',
+                      providers=['CPUExecutionProvider'])
+faceapp.prepare(ctx_id=0, det_size=(320,320))
 
 # ML search algorithgm
 import numpy as np
