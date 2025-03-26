@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from home import face_record
+import face_record
 
 st.set_page_config(page_title="Reporting..", layout='wide')
 st.subheader("Report Page")
