@@ -47,11 +47,11 @@ def retrieve_data():
     return retrieve_df[['Name', 'Role', 'Facial Features', 'Course']]
 
 # Call the function to see the output
-print(retrieve_data())
+# print(retrieve_data())
 
 
 # Call the function to see the output
-print(retrieve_data())
+# print(retrieve_data())
 
 
 
