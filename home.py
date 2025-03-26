@@ -2,69 +2,63 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-import face_record
 
+# Page configuration
 st.set_page_config(page_title='Attendance System', layout='wide')
+col1, col2, col3 = st.columns(3)
+with col2:
+    st.image('logo.jpg')
 
-# Load authentication configuration
+# Load configuration
 with open('auth_configure.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
+# Initialize authenticator
 authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],
     config['cookie']['key'],
     config['cookie']['expiry_days']
-    
 )
 
 
-# Define the login function
-def login():
-    result = authenticator.login('main')
-    if result is None:
-        st.error("Login failed: No result returned from authenticator.")
-        return False, None
-    
-    name, authentication_status, username = result
-    if 'authentication_status' not in st.session_state:
-        st.session_state['authentication_status'] = authentication_status
-    if authentication_status:
-        return True, name
-    elif authentication_status == False:
-        st.error('Username/password is incorrect')
-    elif authentication_status == None:
-        st.warning('Please enter your username and password')
-    return False, None
+def main():
+    # Login with fields parameter
+    try:
+        name, authentication_status, username = authenticator.login(fields={
+            'Form name': 'Login',
+            'Username': 'Username',
+            'Password': 'Password',
+            'Login': 'Login'
+        })
+
+        if authentication_status:
+            st.title("☁️ **Cloud-based Facial Recognition Attendance System** 🚀")
+            st.markdown("---")  # Adds a horizontal separator
+            st.subheader(f"👤 Author: Akinjisola Esther Omobolanle")
+            st.subheader(f"🆔 Matric No: CSC/2022/033")
+            st.write(f'Welcome {name}!')
+
+            # Logout button
+            if st.sidebar.button('Logout'):
+                authenticator.logout('Logout', 'main')
+                st.session_state.clear()
+                st.rerun()
+
+            # Face recognition module
+            with st.spinner("Loading Face Recognition"):
+                import face_record
+                st.success("Module Loaded")
+
+        elif authentication_status == False:
+            st.error('Username/password incorrect')
+
+        elif authentication_status == None:
+            st.warning('Enter username and password')
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 
-# Define the logout function
-def logout():
-    authenticator.logout('main')
-    st.session_state.clear()
-    st.rerun()
-
-
-# Page configuration
-
-
-# Login authentication
-auth_status, user_name = login()
-
-if auth_status:
-    st.header("Attendance System using Face Recognition")
-    st.write(f'Welcome {user_name}!')
-
-    # Add a logout button
-    if st.button('Logout', key='logout_button'):
-        logout()
-
-    with st.spinner("Loading data and Retrieving"):
-        import face_record
-
-    st.success("Model Successfully Loaded")
-    st.success("Data Retrieval Complete")
-elif st.session_state['authentication_status'] == False:
-    st.error('Username/password is incorrect')
-elif st.session_state['authentication_status'] == None:
-    st.warning('Please enter your username and password')
+if __name__ == '__main__':
+    main()
