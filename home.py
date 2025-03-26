@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-import face_record
 
 # Page configuration
 st.set_page_config(page_title='Attendance System', layout='wide')
@@ -11,27 +10,52 @@ with col2:
     st.image('logo.jpg')
 
 # Load configuration
-with open('auth_configure.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+try:
+    with open('auth_configure.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+except Exception as e:
+    st.error(f"Error loading configuration file: {e}")
+    st.stop()
 
 # Initialize authenticator
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
-)
-
+try:
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days']
+    )
+except Exception as e:
+    st.error(f"Error initializing authenticator: {e}")
+    st.stop()
 
 def main():
     # Login with fields parameter
     try:
-        name, authentication_status, username = authenticator.login(fields={
+        # Print debug information about the authentication configuration
+        st.write("Debug: Authentication Configuration")
+        st.write(config['credentials'])
+
+        # Modify login call to handle potential None return
+        login_result = authenticator.login(fields={
             'Form name': 'Login',
             'Username': 'Username',
             'Password': 'Password',
             'Login': 'Login'
         })
+
+        # Check if login_result is None or has unexpected structure
+        if login_result is None:
+            st.error("Authentication failed: No response from login method")
+            return
+
+        # Unpack with a safety check
+        try:
+            name, authentication_status, username = login_result
+        except (ValueError, TypeError) as e:
+            st.error(f"Error unpacking login result: {e}")
+            st.write(f"Received login result: {login_result}")
+            return
 
         if authentication_status:
             st.title("☁️ **Cloud-based Facial Recognition Attendance System** 🚀")
@@ -58,8 +82,10 @@ def main():
             st.warning('Enter username and password')
 
     except Exception as e:
-        st.error(f"An error occurred: {e}")
-
+        st.error(f"An unexpected error occurred: {e}")
+        # Print the full traceback for more detailed debugging
+        import traceback
+        st.error(traceback.format_exc())
 
 if __name__ == '__main__':
     main()
