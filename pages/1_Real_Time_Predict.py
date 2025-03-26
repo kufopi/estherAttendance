@@ -1,6 +1,6 @@
 from face_record import RealTimer
 from home import st
-from home import face_record
+import face_record
 from streamlit_webrtc import webrtc_streamer
 import av
 import time
