@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+import face_record
 
 # Page configuration
 st.set_page_config(page_title='Attendance System', layout='wide')
@@ -39,8 +40,8 @@ def main():
             st.subheader(f"🆔 Matric No: CSC/2022/033")
             st.write(f'Welcome {name}!')
 
-            # Logout button
-            if st.sidebar.button('Logout'):
+            # Logout button with a unique key
+            if st.sidebar.button('Logout', key='logout_button'):
                 authenticator.logout('Logout', 'main')
                 st.session_state.clear()
                 st.rerun()
