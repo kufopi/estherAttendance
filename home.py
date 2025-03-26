@@ -23,7 +23,8 @@ try:
         config['credentials'],
         config['cookie']['name'],
         config['cookie']['key'],
-        config['cookie']['expiry_days']
+        config['cookie']['expiry_days'],
+        use_keyring=False
     )
 except Exception as e:
     st.error(f"Error initializing authenticator: {e}")
